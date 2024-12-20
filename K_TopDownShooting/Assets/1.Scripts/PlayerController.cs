@@ -6,6 +6,9 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 3f;
 
+    public Material flashMaterial;
+    public Material defaultMaterial;
+
     private Vector3 move;
 
     void Start()
@@ -77,5 +80,44 @@ public class PlayerController : MonoBehaviour
             newBullet.transform.position = transform.position + new Vector3(0, -0.5f, 0);
             newBullet.GetComponent<Bullet>().Direction = worldPosition;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if(GetComponent<Character>().Hit(1))
+            {
+                //살아있을 때
+                Flash();
+            }
+            else
+            {
+                //죽었을 때
+                Die();
+            }
+        }
+    }
+
+    void Flash()
+    {
+        GetComponent<SpriteRenderer>().material = flashMaterial;
+        Invoke("AfterFlash", 0.5f);
+    }
+
+    void AfterFlash()
+    {
+        GetComponent<SpriteRenderer>().material = defaultMaterial;
+    }
+
+    void Die()
+    {
+        GetComponent<Animator>().SetTrigger("Die");
+        Invoke("AfterDying", 0.875f);
+    }
+
+    void AfterDying()
+    {
+        //gameObject.SetActive(false);
     }
 }

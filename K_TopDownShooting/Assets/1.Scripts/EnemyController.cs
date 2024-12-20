@@ -13,7 +13,7 @@ public class EnemyController : MonoBehaviour
 
     public float speed = 2;
 
-    public Material flashMeterial;
+    public Material flashMaterial;
     public Material defaultMaterial;
 
     private GameObject target;
@@ -79,7 +79,7 @@ public class EnemyController : MonoBehaviour
 
     void Flash()
     {
-        GetComponent<SpriteRenderer>().material = flashMeterial;
+        GetComponent<SpriteRenderer>().material = flashMaterial;
         Invoke("AfterFlash", 0.5f);
     }
 

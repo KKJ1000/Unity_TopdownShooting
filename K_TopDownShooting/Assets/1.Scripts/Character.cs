@@ -5,18 +5,24 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     public float MaxHp = 3;
+    public GameObject HPGauge;
     private float HP;
+    float HPMaxWidth;
 
-    // Start is called before the first frame update
     void Start()
     {
         HP = MaxHp;
+        if (HPGauge != null)
+        {
+            HPMaxWidth = HPGauge.GetComponent<RectTransform>().sizeDelta.x;
+        }
     }
 
     public void Initialize()
     {
         HP = MaxHp;
     }
+
     //살아있으면 true를 리턴한다.
     public bool Hit(float damage)
     {
@@ -27,6 +33,11 @@ public class Character : MonoBehaviour
             HP = 0;
         }
 
+        if (HPGauge != null)
+        {
+            HPGauge.GetComponent<RectTransform>().sizeDelta = new Vector2(HP / MaxHp * HPMaxWidth,
+            HPGauge.GetComponent<RectTransform>().sizeDelta.y);
+        }
         return HP > 0;
     }
 }
