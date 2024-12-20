@@ -21,7 +21,22 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
-        target = GameObject.Find("Player");
+
+    }
+
+    public void Spawn(GameObject target)
+    {
+        this.target = target;
+        state = State.Spawning;
+        GetComponent<Character>().Initialize();
+        GetComponent<Animator>().SetTrigger("Spawn");
+        Invoke("StartMoving", 1);
+        GetComponent<Collider2D>().enabled = false;
+    }
+
+    void StartMoving()
+    {
+        GetComponent<Collider2D>().enabled = true;
         state = State.Moving;
     }
 
@@ -82,6 +97,6 @@ public class EnemyController : MonoBehaviour
 
     void AfterDying()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

@@ -13,6 +13,10 @@ public class Character : MonoBehaviour
         HP = MaxHp;
     }
 
+    public void Initialize()
+    {
+        HP = MaxHp;
+    }
     //살아있으면 true를 리턴한다.
     public bool Hit(float damage)
     {
