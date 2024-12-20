@@ -12,65 +12,78 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 move;
 
+    public AudioClip shotSound;
+    public AudioClip hitSound;
+    public AudioClip deadSound;
+
+    private bool isAlive; //살아 있는지 체크하는 플래그변수
+
     void Start()
     {
-        
+        isAlive = true;
     }
 
     void Update()
     {
-        move = Vector3.zero;
+        if (isAlive)
+        {
+            move = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-        {
-            move += new Vector3(-1, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-        {
-            move += new Vector3(1, 0, 0);
-        }
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            move += new Vector3(0, 1, 0);
-        }
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            move += new Vector3(0, -1, 0);
-        }
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                move += new Vector3(-1, 0, 0);
+            }
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            {
+                move += new Vector3(1, 0, 0);
+            }
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+            {
+                move += new Vector3(0, 1, 0);
+            }
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+            {
+                move += new Vector3(0, -1, 0);
+            }
 
-        move = move.normalized;
-        if (move.x < 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
+            move = move.normalized;
+            if (move.x < 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
 
-        if (move.x > 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
+            if (move.x > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
 
-        if (move.magnitude > 0)
-        {
-            GetComponent<Animator>().SetTrigger("Move");
-        }
-        else
-        {
-            GetComponent<Animator>().SetTrigger("Stop");
-        }
+            if (move.magnitude > 0)
+            {
+                GetComponent<Animator>().SetTrigger("Move");
+            }
+            else
+            {
+                GetComponent<Animator>().SetTrigger("Stop");
+            }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Shoot();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Shoot();
+            }
         }
     }
 
     void FixedUpdate()
     {
-        transform.Translate(move * speed * Time.fixedDeltaTime);
+        if (isAlive)
+        {
+            transform.Translate(move * speed * Time.fixedDeltaTime);
+        }
     }
 
     void Shoot()
     {
+        GetComponent<AudioSource>().PlayOneShot(shotSound);
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         worldPosition.z = 0;
         worldPosition -= (transform.position + new Vector3(0, -0.5f, 0));
@@ -89,12 +102,13 @@ public class PlayerController : MonoBehaviour
         {
             if(GetComponent<Character>().Hit(1))
             {
-                //살아있을 때
+                GetComponent<AudioSource>().PlayOneShot(hitSound);
                 Flash();
             }
             else
             {
-                //죽었을 때
+                GetComponent<AudioSource>().PlayOneShot(deadSound);
+                gameObject.GetComponent<Collider2D>().enabled = false;
                 Die();
             }
         }
@@ -114,7 +128,8 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         GetComponent<Animator>().SetTrigger("Die");
-        Invoke("AfterDying", 0.875f);
+        isAlive = false;
+        Invoke("AfterDying", 1.2f);
     }
 
     void AfterDying()
