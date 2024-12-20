@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 3f;
+
     private Vector3 move;
 
     void Start()
@@ -52,10 +53,29 @@ public class PlayerController : MonoBehaviour
         {
             GetComponent<Animator>().SetTrigger("Stop");
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Shoot();
+        }
     }
 
     void FixedUpdate()
     {
         transform.Translate(move * speed * Time.fixedDeltaTime);
+    }
+
+    void Shoot()
+    {
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        worldPosition.z = 0;
+        worldPosition -= (transform.position + new Vector3(0, -0.5f, 0));
+
+        GameObject newBullet = GetComponent<ObjectPool>().Get();
+        if (newBullet != null)
+        {
+            newBullet.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+            newBullet.GetComponent<Bullet>().Direction = worldPosition;
+        }
     }
 }
